@@ -6,7 +6,7 @@
 <title>Ligh and Jin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -14,7 +14,10 @@
     --bg: #000000;
     --fg: #ededed;
     --muted: #8f8f8f;
-    --line: #1f1f1f;
+    --line: #1a1a1a;
+    --line-hi: #3a3a3a;
+    --mx: 50%;
+    --my: 35%;
   }
 
   html, body { height: 100%; }
@@ -22,7 +25,7 @@
   body {
     background: var(--bg);
     color: var(--fg);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     -webkit-font-smoothing: antialiased;
     min-height: 100dvh;
     display: grid;
@@ -31,19 +34,18 @@
     position: relative;
   }
 
+  /* glow follows cursor */
   .glow {
     position: fixed;
-    top: -25%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90vw;
-    max-width: 900px;
-    height: 600px;
-    background: radial-gradient(50% 50% at 50% 50%, rgba(255, 255, 255, 0.08), transparent 70%);
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     pointer-events: none;
     z-index: 0;
+    background: radial-gradient(420px circle at var(--mx) var(--my), rgba(255,255,255,0.10), transparent 60%);
+    transition: background 0.18s ease-out;
   }
 
+  /* base faint grid */
   .grid {
     position: fixed;
     inset: 0;
@@ -52,10 +54,24 @@
     background-image:
       linear-gradient(to right, var(--line) 1px, transparent 1px),
       linear-gradient(to bottom, var(--line) 1px, transparent 1px);
-    background-size: 64px 64px;
-    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, #000 30%, transparent 75%);
-    mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, #000 30%, transparent 75%);
-    opacity: 0.6;
+    background-size: 56px 56px;
+    -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 45%, #000 30%, transparent 78%);
+    mask-image: radial-gradient(ellipse 75% 65% at 50% 45%, #000 30%, transparent 78%);
+  }
+
+  /* bright grid revealed only around the cursor (spotlight) */
+  .grid-hi {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, var(--line-hi) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--line-hi) 1px, transparent 1px);
+    background-size: 56px 56px;
+    -webkit-mask-image: radial-gradient(200px circle at var(--mx) var(--my), #000 0%, transparent 65%);
+    mask-image: radial-gradient(200px circle at var(--mx) var(--my), #000 0%, transparent 65%);
+    transition: -webkit-mask-image 0.08s linear, mask-image 0.08s linear;
   }
 
   .wrap {
@@ -65,60 +81,75 @@
     padding: 2rem;
     opacity: 0;
     transform: translateY(8px);
-    animation: enter 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: enter 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
   h1 {
-    font-weight: 700;
-    font-size: clamp(2.4rem, 8vw, 5rem);
-    letter-spacing: -0.04em;
-    line-height: 1.05;
-    background: linear-gradient(180deg, #ffffff 0%, #999999 100%);
+    font-weight: 600;
+    font-size: clamp(2.6rem, 8.5vw, 5.4rem);
+    letter-spacing: -0.045em;
+    line-height: 1.04;
+    background: linear-gradient(180deg, #ffffff 10%, #8a8a8a 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
   .sub {
-    margin-top: 1.5rem;
+    margin-top: 1.6rem;
     display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
-    font-size: 0.85rem;
+    gap: 0.65rem;
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    font-size: 0.72rem;
     font-weight: 500;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
     color: var(--muted);
+    padding-left: 0.34em;
   }
 
   .pulse {
-    width: 7px;
-    height: 7px;
+    width: 6px; height: 6px;
     border-radius: 50%;
     background: #fff;
-    box-shadow: 0 0 12px 2px rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 12px 2px rgba(255,255,255,0.55);
     animation: pulse 2s ease-in-out infinite;
   }
 
-  @keyframes enter {
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50%      { opacity: 0.4; transform: scale(0.85); }
-  }
+  @keyframes enter { to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1);} 50% { opacity: 0.35; transform: scale(0.8);} }
 
   @media (prefers-reduced-motion: reduce) {
     .wrap { animation-duration: 0.01s; }
     .pulse { animation: none; }
+    .glow, .grid-hi { transition: none; }
   }
 </style>
 </head>
 <body>
   <div class="glow"></div>
   <div class="grid"></div>
+  <div class="grid-hi"></div>
   <main class="wrap">
     <h1>Ligh and Jin</h1>
     <p class="sub"><span class="pulse"></span>Coming soon</p>
   </main>
+<script>
+  const root = document.documentElement;
+  let raf = null, tx = innerWidth/2, ty = innerHeight*0.35;
+  function move(e){
+    const p = e.touches ? e.touches[0] : e;
+    tx = p.clientX; ty = p.clientY;
+    if (raf) return;
+    raf = requestAnimationFrame(() => {
+      root.style.setProperty('--mx', tx + 'px');
+      root.style.setProperty('--my', ty + 'px');
+      raf = null;
+    });
+  }
+  window.addEventListener('pointermove', move, { passive: true });
+  window.addEventListener('touchmove', move, { passive: true });
+</script>
 </body>
 </html>
